@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test e2e</title>
+    <style>
+      body { margin: 0; padding: 20px; }
+
+      table {
+        border: 1px solid black;
+        
+      }
+
+      table td {
+        border: 1 px solid black;
+      }
+
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <!-- <div id="errors-container">Nombre d'erreurs : <span class="nb-errors"></span></div>
+    <div id="state-container">Etat : <span class="state"></span></div>
+    <div id="tests-container"></div> -->
+
+    <button onClick="reload()">Recharger</button>
+
+    <div id="customers">
+
+    </div>
+
+    <div id="simulations">
+
+    </div>
+  </body>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+    function reload() {
+      $.get('/cloud');
+    }
+
+    var socket = io();
+    socket.on('result', function(data) {
+      console.log(data);
+      fillHtml(data);
+    });
+
+    function fillHtml(json) {
+      const customers = json.customers;
+      const simulations = json.simulations;
+
+      $("#simulations").empty();
+
+//       $html = `
+// <table>
+//   <thead>
+//     <tr>
+//       <th>id</th>
+//       <th>Nom</th>
+//       <th>updatedAt</th>
+//     </tr>
+//   </thead>
+//   <tbody>
+//     <tr>
+//       <td>${`
+
+      $html = "<table>";
+      $html += "<thead>";
+      $html += "<th>id</th>";
+      $html += "<th>Nom</th>";
+      $html += "<th>UpdatedAt</th>";
+      $html += "</thead>";
+      $html += "<tbody>";
+      simulations.forEach(simulation => {
+        $html += "<tr>";
+        $html += '<td>' + simulation.id + '</td>';
+        $html += '<td>' + simulation.name + '</td>';
+        $html += '<td>' + simulation.updated_at + '</td>'
+        $html += '</tr>';
+      });
+      $html += '</tbody>';
+      $html += '</table>';
+
+      $('#simulations').append($html);
+
+
+      // $("#errors-container .nb-errors").text(json.nbErrors);
+      // $("#state-container .state").text(json.isRunning ? 'En cours' : 'Terminé');
+      // $("#tests-container").empty();
+      // for (let i=0; i<json.tests.length; i++) {
+      //   let test = json.tests[i];
+      //   let testContainerElement = $('<div class="test-container"></div>')
+      //   $("#tests-container").append(testContainerElement);
+      //   let testNameElement = $('<div class="test-name">'+ test.name +'</div>');
+      //   testContainerElement.append(testNameElement);
+
+      //   for (let j=0; j<test.lines.length; j++) {
+      //     let line = test.lines[j];
+      //     let classValidName = '';
+      //     if (line.type === 'valid') {
+      //       classValidName = 'valid';
+      //     } else if (line.type === 'invalid') {
+      //       classValidName = 'invalid';
+      //     }
+      //     let testLineElement = ('<div class="test-line ' + classValidName + '">- '+ line.message +'</div>')
+      //     testContainerElement.append(testLineElement);
+
+      //     if (line.expected) {
+      //       let expectedElement = ('<div class="test-line-expected">Expected : '+ line.expected +'</div>')
+      //       testContainerElement.append(expectedElement);
+      //     }
+      //     if (line.actual) {
+      //       let actualElement = ('<div class="test-line-actual">Actual : '+ line.actual +'</div>')
+      //       testContainerElement.append(actualElement);
+      //     }
+      //   }
+      // }
+    }
+
+  </script>
+</html>

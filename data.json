@@ -1,0 +1,18 @@
+{
+  "customer": [
+    {
+      "id": "1",
+      "email": "mail@test.fr",
+      "first_name": "firstName1",
+      "last_name": "lastName1",
+      "mobile_phone": "0606060606",
+      "phone": "0406060606",
+      "address": "address",
+      "postal_code": "69003",
+      "city": "Lyon",
+      "created_at": "1670405017",
+      "updated_at": "1670405017",
+      "is_archived": true
+    }
+  ]
+}
