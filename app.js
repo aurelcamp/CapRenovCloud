@@ -21,7 +21,7 @@ function delay(time) {
 
 
 // Synthèse
-app.get('/cloud/contacts/simulations', (req, res) => {
+app.get('/cloud/contacts/simulations', async(req, res) => {
   const result = customers.map(customer => {
     return {
       id: customer.id,
@@ -62,8 +62,10 @@ app.post('/cloud/customer/create', async(req, res) => {
   res.status(201).json({ "customer_id": customer.id, "success": true });
 });
 
-app.post('/cloud/customer/:id/update', (req, res) => {
+app.post('/cloud/customer/:id/update', async(req, res) => {
   const customerId = req.params.id;
+  const queryParams = req.query;
+  const force = queryParams.force && queryParams.force == 'true';
   let customer = customerFromJSON(req.body);
 
   const currentCustomer = customers.find(c => c.id == customerId);
@@ -81,7 +83,7 @@ app.post('/cloud/customer/:id/update', (req, res) => {
   customer = {...currentCustomer, ...removeNullKeys(customer)};
 
   // Si la simulation dans la base est plus récente que celle de l'application
-  if (currentCustomer.updated_at > customer.updated_at) {
+  if (!force && currentCustomer.updated_at > customer.updated_at) {
     return res.status(400).json({status: 400, message: 'CONFLICT'})
   }
 
@@ -91,7 +93,7 @@ app.post('/cloud/customer/:id/update', (req, res) => {
   res.status(200).json({ "customer_id": customerId, "success": true });
 });
 
-app.delete('/cloud/customer/:id/archive', (req, res) => {
+app.delete('/cloud/customer/:id/archive', async(req, res) => {
   const customerId = req.params.id;
   const currentCustomer = customers.find(c => c.id == customerId);
   if (!currentCustomer) {
@@ -106,7 +108,7 @@ app.delete('/cloud/customer/:id/archive', (req, res) => {
 });
 
 // Simulations
-app.get('/cloud/simulation/:id', (req, res) => {
+app.get('/cloud/simulation/:id', async(req, res) => {
   const simulationId = req.params.id;
   const currentSimulation = simulations.find(s => s.id == simulationId);
   if (!currentSimulation) {
@@ -117,7 +119,7 @@ app.get('/cloud/simulation/:id', (req, res) => {
   res.status(200).json(currentSimulation);
 });
 
-app.post('/cloud/simulation/create', (req, res) => {
+app.post('/cloud/simulation/create', async(req, res) => {
   const simulation = simulationFromJSON(req.body);
 
   const customer = customers.find(c => c.id == simulation.cloud_customer_id);
@@ -133,8 +135,10 @@ app.post('/cloud/simulation/create', (req, res) => {
   res.status(201).json({ "simulation_id": simulation.id, "success": true });
 });
 
-app.post('/cloud/simulation/:id/update', (req, res) => {
+app.post('/cloud/simulation/:id/update', async(req, res) => {
   const simulationId = req.params.id;
+  const queryParams = req.query;
+  const force = queryParams.force && queryParams.force == 'true';
   let simulation = simulationFromJSON(req.body);
 
   const currentSimulation = simulations.find(s => s.id == simulationId);
@@ -160,7 +164,7 @@ app.post('/cloud/simulation/:id/update', (req, res) => {
   simulation = {...currentSimulation, ...removeNullKeys(simulation)};
 
   // Si la simulation dans la base est plus récente que celle de l'application
-  if (currentSimulation.updated_at > simulation.updated_at) {
+  if (!force && currentSimulation.updated_at > simulation.updated_at) {
     return res.status(400).json({status: 400, message: 'CONFLICT'})
   }
 
@@ -170,7 +174,7 @@ app.post('/cloud/simulation/:id/update', (req, res) => {
   res.status(200).json({ "simulation_id": "1", "success": true });
 });
 
-app.delete('/cloud/simulation/:id/archive', (req, res) => {
+app.delete('/cloud/simulation/:id/archive', async(req, res) => {
   const simulationId = req.params.id;
   const currentSimulation = simulations.find(s => s.id == simulationId);
   if (!currentSimulation) {
